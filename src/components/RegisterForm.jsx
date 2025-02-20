@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "@/store/authStore";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -6,6 +7,7 @@ import { Label } from "./ui/label";
 const RegisterForm = () => {
   const { register, error, loading } = useAuthStore();
   const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,6 +16,7 @@ const RegisterForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     register(form.email, form.password);
+    navigate("/");
   };
   return (
     <div className="flex justify-between items-center flex-col gap-4">

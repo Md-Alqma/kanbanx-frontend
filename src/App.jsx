@@ -1,17 +1,19 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Button } from "./components/ui/button";
 import RegisterForm from "./components/RegisterForm";
+import LoginForm from "./components/LoginForm";
+import Navbar from "./components/Navbar";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <>
       <Router>
-        <div className="flex justify-center items-center flex-col gap-10 p-16">
-          <h1 className="text-4xl font-black">KanbanX</h1>
-        </div>
+        <Navbar />
         <Routes>
+          <Route path="/" element={<Dashboard />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginForm />} />
         </Routes>
       </Router>
     </>

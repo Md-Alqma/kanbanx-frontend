@@ -28,10 +28,13 @@ const useAuthStore = create((set) => ({
     }
   },
 
-  login: async () => {
+  login: async (email, password) => {
     set({ loading: true });
     try {
-      const response = await apiClient.post("users/login", { email, password });
+      const response = await apiClient.post("/users/login", {
+        email,
+        password,
+      });
       set({ user: response.data.user, isAuthenticated: true, loading: false });
     } catch (error) {
       set({
