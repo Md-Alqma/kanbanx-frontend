@@ -14,6 +14,7 @@ const Navbar = () => {
   return (
     <div className="flex justify-between p-4">
       <h2 className="text-xl font-black">KanbanX</h2>
+
       <div className="flex items-center px-2 gap-4">
         {isAuthenticated ? (
           <>

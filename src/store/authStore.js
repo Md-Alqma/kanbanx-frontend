@@ -7,6 +7,17 @@ const useAuthStore = create((set) => ({
   loading: false,
   error: null,
 
+  fetchUser: async () => {
+    set({ loading: true });
+    try {
+      const response = await apiClient.get("/users/me", {
+        withCredentials: true,
+      });
+      set({ user: response.data.user, isAuthenticated: true, loading: false });
+    } catch (error) {
+      set({ user: null, isAuthenticated: false, loading: false });
+    }
+  },
   register: async (email, password) => {
     set({ loading: true });
     try {
@@ -50,16 +61,6 @@ const useAuthStore = create((set) => ({
       set({ user: null, isAuthenticated: false });
     } catch (error) {
       console.error("Logout failed:", error);
-    }
-  },
-
-  fetchUser: async () => {
-    set({ loading: true });
-    try {
-      const response = await apiClient.get("/users/me");
-      set({ user: response.data.user, isAuthenticated: true, loading: false });
-    } catch (error) {
-      set({ user: null, isAuthenticated: false, loading: false });
     }
   },
 }));

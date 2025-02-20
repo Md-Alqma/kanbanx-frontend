@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import useBoardStore from "@/store/boardStore";
+import { Board } from "@/components/Board";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
@@ -18,26 +19,26 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex justify-center items-center flex-col mt-10">
-      <h1 className="text-3xl font-bold ">Dashboard</h1>
-      <div className="p-4">
-        <Button
-          onClick={addBoard}
-          variant="outline"
-          className="bg-green-500 text-white px-4 py-2 mb-4"
-        >
+    <main className="flex items-start mt-10">
+      <div className="flex flex-col gap-4 p-8 border border-gray-300 min-h-full">
+        <h3 className="text-2xl font-black">Boards</h3>
+        <Button className="bg-green-500" onClick={addBoard}>
           Add Board
         </Button>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
+
         {boards?.map((board) => (
-          <div key={board._id}>
-            <p>{board.title}</p>
-          </div>
+          <Board key={board._id} title={board.title} />
         ))}
       </div>
-    </div>
+      <div className="flex-1 p-8 text-center">
+        <h3 className="text-2xl font-black">Your Board</h3>
+      </div>
+    </main>
   );
 };
 
