@@ -122,3 +122,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layout container {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -3,6 +3,7 @@ import apiClient from "@/api/apiClient";
 
 const useBoardStore = create((set) => ({
   boards: [],
+  board: null,
   loading: false,
 
   fetchBoards: async () => {
@@ -17,6 +18,13 @@ const useBoardStore = create((set) => ({
     }
   },
 
+  singleBoard: async (boardId) => {
+    set({ loading: true });
+    try {
+      const response = await apiClient.get(`/boards/${boardId}`);
+      set({ board: response.data, loading: false });
+    } catch (error) {}
+  },
   createBoard: async (title) => {
     try {
       const response = await apiClient.post("/boards", { title });
@@ -24,6 +32,19 @@ const useBoardStore = create((set) => ({
       return response.data;
     } catch (error) {
       console.error("Error adding board", error);
+    }
+  },
+
+  updateBoard: async (boardId, title) => {
+    try {
+      const response = await apiClient.put(`/boards/${boardId}`, { title });
+      set((state) => ({
+        boards: state.boards.map((board) =>
+          board._id === boardId ? { ...board, ...response.data } : board
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating board:", error);
     }
   },
 

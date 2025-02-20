@@ -24,19 +24,15 @@ const Dashboard = () => {
   }
 
   return (
-    <main className="flex items-start mt-10">
-      <div className="flex flex-col gap-4 p-8 border border-gray-300 min-h-full">
-        <h3 className="text-2xl font-black">Boards</h3>
-        <Button className="bg-green-500" onClick={addBoard}>
-          Add Board
-        </Button>
-
-        {boards?.map((board) => (
-          <Board key={board._id} title={board.title} />
-        ))}
+    <main className="flex flex-col gap-4 justify-center items-center">
+      <div className="flex justify-center items-center flex-col gap-2">
+        <h3 className="text-2xl font-black">Dashboard</h3>
+        <Button>Add Board</Button>
       </div>
-      <div className="flex-1 p-8 text-center">
-        <h3 className="text-2xl font-black">Your Board</h3>
+      <div className="flex justify-between items-center flex-wrap gap-4 cursor-pointer">
+        {boards?.map((board) => (
+          <Board key={board._id} title={board.title} boardId={board._id} />
+        ))}
       </div>
     </main>
   );

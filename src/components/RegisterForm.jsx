@@ -16,7 +16,7 @@ const RegisterForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     register(form.email, form.password);
-    navigate("/");
+    navigate("/boards");
   };
   return (
     <div className="flex justify-between items-center flex-col gap-4">
