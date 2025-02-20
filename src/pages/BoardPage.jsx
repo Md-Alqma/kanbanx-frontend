@@ -1,3 +1,4 @@
+import { List } from "@/components/List";
 import { Button } from "@/components/ui/button";
 import useBoardStore from "@/store/boardStore";
 import useListStore from "@/store/listStore";
@@ -32,7 +33,9 @@ export const BoardPage = () => {
         <div className="flex mt-10 overflow-x-auto whitespace-nowrap hide-scrollbar gap-16">
           {board.lists.map((list) => (
             <List
-              list={list}
+              title={list.title}
+              listId={list._id}
+              boardId={boardId}
               className="w-full border border-black"
               key={list._id}
             >
