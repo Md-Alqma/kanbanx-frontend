@@ -11,7 +11,9 @@ const useListStore = create((set) => ({
     try {
       const response = await apiClient.post("/lists", { boardId, title });
 
-      const { boards, set: setBoardStore } = useBoardStore();
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || [];
+      const setBoardStore = useBoardStore.setState;
 
       setBoardStore({
         boards: boards.map((board) =>
@@ -23,8 +25,18 @@ const useListStore = create((set) => ({
       set((state) => ({
         lists: [...state.lists, response.data],
       }));
+      await get().fetchLists();
     } catch (error) {
       console.error("Error creating list:", error);
+    }
+  },
+
+  fetchLists: async () => {
+    try {
+      const response = await apiClient.get("/lists");
+      set({ lists: response.data });
+    } catch (error) {
+      console.error("Error fetching lists:", error);
     }
   },
 
@@ -43,7 +55,9 @@ const useListStore = create((set) => ({
     try {
       const response = await apiClient.put(`/lists/${listId}`, updatedData);
 
-      const { boards, set: setBoardStore } = useBoardStore();
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || [];
+      const setBoardStore = useBoardStore.setState;
 
       setBoardStore({
         boards: boards.map((board) =>
@@ -71,7 +85,9 @@ const useListStore = create((set) => ({
     try {
       await apiClient.delete(`/lists/${listId}`);
 
-      const { boards, set: setBoardStore } = useBoardStore.getState();
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || [];
+      const setBoardStore = useBoardStore.setState;
 
       setBoardStore({
         boards: boards.map((board) =>

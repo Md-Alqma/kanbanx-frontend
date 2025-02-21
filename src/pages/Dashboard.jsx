@@ -1,40 +1,51 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useBoardStore from "@/store/boardStore";
 import { Board } from "@/components/Board";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const Dashboard = () => {
-  const { fetchBoards, createBoard, deleteBoard, boards, loading } =
-    useBoardStore();
-
+  const [title, setTitle] = useState("");
+  const { fetchBoards, createBoard, boards, loading } = useBoardStore();
+  const navigate = useNavigate();
   useEffect(() => {
     fetchBoards();
   }, []);
 
-  const addBoard = async () => {
-    const title = prompt("Enter board title");
-    if (title) {
+  const handleCreateBoard = async () => {
+    if (title.trim()) {
       await createBoard(title);
       fetchBoards();
+      setTitle("");
     }
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <main className="flex flex-col gap-4 justify-center items-center">
-      <div className="flex justify-center items-center flex-col gap-2">
-        <h3 className="text-2xl font-black">Dashboard</h3>
-        <Button>Add Board</Button>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Kanban Dashboard</h1>
+      <div className="flex flex-col gap-2 mb-4">
+        <Input
+          type="text"
+          className="border p-2 rounded"
+          placeholder="Board Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Button onClick={handleCreateBoard}>Add Board</Button>
       </div>
-      <div className="flex justify-between items-center flex-wrap gap-4 cursor-pointer">
-        {boards?.map((board) => (
-          <Board key={board._id} title={board.title} boardId={board._id} />
+      {loading && <p>Loading...</p>}
+      <div className="grd grid-cols-4 gap-4">
+        {boards.map((board) => (
+          <div
+            key={board._id}
+            className="p-4 border rounded-lg shadow-md cursor-pointer hover:bg-gray-100"
+            onClick={() => navigate(`/boards/${board._id}`)}
+          >
+            {board.title ? board.title : "Untitled"}
+          </div>
         ))}
       </div>
-    </main>
+    </div>
   );
 };
 

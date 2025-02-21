@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import apiClient from "@/api/apiClient";
+import useBoardStore from "./boardStore";
 
 const useTaskStore = create((set) => ({
   tasks: [],
@@ -8,22 +9,31 @@ const useTaskStore = create((set) => ({
 
   addTask: async (listId, title, description, dueDate, priority) => {
     try {
-      const response = await axios.post(`/tasks`, {
+      const response = await apiClient.post(`/tasks`, {
         listId,
         title,
         description,
         dueDate,
         priority,
       });
-      set((state) => ({
-        boards: state.boards.map((board) => ({
+
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || []; // Ensure it's an array
+      const setBoardStore = useBoardStore.setState;
+
+      setBoardStore({
+        boards: boards.map((board) => ({
           ...board,
           lists: board.lists.map((list) =>
             list._id === listId
-              ? { ...list, tasks: [...list.tasks, response.data] }
+              ? { ...list, tasks: [...(list.tasks || []), response.data] }
               : list
           ),
         })),
+      });
+
+      set((state) => ({
+        tasks: [...state.tasks, response.data],
       }));
     } catch (error) {
       console.error("Error adding task:", error);
@@ -32,7 +42,7 @@ const useTaskStore = create((set) => ({
 
   deleteTask: async (taskId, listId) => {
     try {
-      await axios.delete(`/tasks/${taskId}`);
+      await apiClient.delete(`/tasks/${taskId}`);
       set((state) => ({
         boards: state.boards.map((board) => ({
           ...board,
@@ -66,7 +76,7 @@ const useTaskStore = create((set) => ({
 
   moveTask: async (taskId, newListId) => {
     try {
-      const response = await axios.put(`/tasks/${taskId}/move`, {
+      const response = await apiClient.put(`/tasks/${taskId}/move`, {
         listId: newListId,
       });
       set((state) => ({

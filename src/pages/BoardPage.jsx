@@ -1,50 +1,58 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { List } from "@/components/List";
 import { Button } from "@/components/ui/button";
 import useBoardStore from "@/store/boardStore";
 import useListStore from "@/store/listStore";
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Input } from "@/components/ui/input";
 
 export const BoardPage = () => {
-  const { boardId } = useParams();
+  const [title, setTitle] = useState("");
   const { singleBoard, loading, board } = useBoardStore();
-  const { addList } = useListStore();
+  const { addList, fetchLists } = useListStore();
+  const { boardId } = useParams();
 
   useEffect(() => {
-    if (boardId) {
-      singleBoard(boardId);
-    }
+    singleBoard(boardId);
   }, [boardId]);
 
-  const handleList = async (boardId) => {
-    const title = prompt("Enter List Title");
-    if (title) {
+  useEffect(() => {
+    fetchLists();
+  }, []);
+
+  const handleAddList = async () => {
+    if (title.trim()) {
       await addList(boardId, title);
       singleBoard(boardId);
+      fetchLists();
+      setTitle("");
     }
   };
-  if (loading) return <p>Loading...</p>;
 
-  if (!board) return <p>No Board Found</p>;
   return (
-    <div className="flex flex-col justify-center p-12 flex-nowrap">
-      <h3 className="text-2xl font-black text-center">{board.title}</h3>
-      {board.lists ? (
-        <div className="flex mt-10 overflow-x-auto whitespace-nowrap hide-scrollbar gap-16">
-          {board.lists.map((list) => (
-            <List
-              title={list.title}
-              listId={list._id}
-              boardId={boardId}
-              className="w-full border border-black"
-              key={list._id}
-            />
-          ))}
-          <Button onClick={() => handleList(board._id)}>Add List</Button>
-        </div>
+    <div className="p-6">
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <p>No lists available</p>
+        <h1 className="text-2xl font-bold mb-4">{board?.title}</h1>
       )}
+
+      <div className="flex gap-2 mb-4">
+        <Input
+          type="text"
+          className="border p-2 rounded"
+          placeholder="List title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Button onClick={handleAddList}>Add List</Button>
+      </div>
+
+      <div className="flex gap-4">
+        {board?.lists?.map((list) => (
+          <List key={list._id} list={list} />
+        ))}
+      </div>
     </div>
   );
 };

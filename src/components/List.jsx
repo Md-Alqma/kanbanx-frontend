@@ -26,10 +26,7 @@ import useTaskStore from "@/store/taskStore";
 import useListStore from "@/store/listStore";
 import { Task } from "./Task";
 
-export const List = ({ title, listId, boardId }) => {
-  const [list, setList] = useState({
-    title: "",
-  });
+export const List = ({ list }) => {
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -38,107 +35,106 @@ export const List = ({ title, listId, boardId }) => {
   const { singleList, loading } = useListStore();
   const { addTask } = useTaskStore();
 
-  useEffect(() => {
-    if (listId) {
-      singleList(listId);
-    }
-  }, [listId]);
-
   const handleChange = (e) => {
     setTaskForm({ ...taskForm, [e.target.name]: e.target.value });
   };
 
-  const handleTask = async (e) => {
+  const handleAddTask = async (e) => {
     e.preventDefault();
-    await addTask(
-      listId,
-      taskForm.title,
-      taskForm.description,
-      taskForm.priority
-    );
-    singleList(listId);
+    if (taskForm.title.trim()) {
+      await addTask(
+        list._id,
+        taskForm.title,
+        taskForm.description,
+        taskForm.priority
+      );
+
+      setTaskForm({
+        title: "",
+        description: "",
+        priority: "",
+      });
+    }
   };
 
-  if (loading) return <p>Loading...</p>;
-
-  if (!list) return <p>No List Found</p>;
-
   return (
-    <Card className="px-16 text-center">
-      <CardHeader className="text-lg font-semibold">{title}</CardHeader>
-      {list.tasks ? (
-        <>
-          {list.tasks.map((task) => (
-            <Task title={task.title} />
-          ))}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Add Task</Button>
-            </DialogTrigger>
-            {/* <form onSubmit={(e) => handleTask(e)}> */}
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add Task</DialogTitle>
-                <DialogDescription>Add tasks to your list</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    value={taskForm.title}
-                    onChange={handleChange}
-                    placeholder="sample task"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-2">
-                  <Label htmlFor="description" className="text-left">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="desciption"
-                    name="description"
-                    value={taskForm.description}
-                    onChange={handleChange}
-                    placeholder="sample description"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Select>
-                    <SelectGroup>
-                      <SelectLabel className="text-left">Priority</SelectLabel>
-                    </SelectGroup>
+    <div className="w-72 p-4 border rounded-lg shadow-md bg-gray-100">
+      <h2 className="font-bold">{list.title}</h2>
 
-                    <SelectTrigger className="w-[150px]">
-                      <SelectValue
-                        placeholder="Select priority"
-                        value={taskForm.priority}
-                        onChange={handleChange}
-                        name="priority"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Low">Low</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="High">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+      <div className="mt-2 space-y-2">
+        {list.tasks.map((task) => {
+          console.log(task);
+
+          <Task key={task._id} task={task} />;
+        })}
+      </div>
+
+      <div className="mt-4">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Add Task</Button>
+          </DialogTrigger>
+          {/* <form onSubmit={(e) => handleTask(e)}> */}
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add Task</DialogTitle>
+              <DialogDescription>Add tasks to your list</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  value={taskForm.title}
+                  onChange={handleChange}
+                  placeholder="sample task"
+                  className="col-span-3"
+                />
               </div>
+              <div className="grid grid-cols-4 items-center gap-2">
+                <Label htmlFor="description" className="text-left">
+                  Description
+                </Label>
+                <Textarea
+                  id="desciption"
+                  name="description"
+                  value={taskForm.description}
+                  onChange={handleChange}
+                  placeholder="sample description"
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Select>
+                  <SelectGroup>
+                    <SelectLabel className="text-left">Priority</SelectLabel>
+                  </SelectGroup>
 
-              <DialogFooter>
-                <Button onClick={handleTask}>Add Task</Button>
-              </DialogFooter>
-            </DialogContent>
-            {/* </form> */}
-          </Dialog>
-        </>
-      ) : (
-        <p>No Tasks Available</p>
-      )}
-    </Card>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue
+                      placeholder="Select priority"
+                      value={taskForm.priority}
+                      onChange={handleChange}
+                      name="priority"
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button onClick={handleAddTask}>Add Task</Button>
+            </DialogFooter>
+          </DialogContent>
+          {/* </form> */}
+        </Dialog>
+      </div>
+    </div>
   );
 };
