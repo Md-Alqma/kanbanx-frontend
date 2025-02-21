@@ -9,22 +9,19 @@ import { Input } from "@/components/ui/input";
 export const BoardPage = () => {
   const [title, setTitle] = useState("");
   const { singleBoard, loading, board } = useBoardStore();
-  const { addList, fetchLists } = useListStore();
+  const { addList, fetchLists, lists } = useListStore();
   const { boardId } = useParams();
 
   useEffect(() => {
-    singleBoard(boardId);
+    if (boardId) {
+      fetchLists(boardId);
+    }
   }, [boardId]);
-
-  useEffect(() => {
-    fetchLists();
-  }, []);
 
   const handleAddList = async () => {
     if (title.trim()) {
       await addList(boardId, title);
       singleBoard(boardId);
-      fetchLists();
       setTitle("");
     }
   };
@@ -49,7 +46,7 @@ export const BoardPage = () => {
       </div>
 
       <div className="flex gap-4">
-        {board?.lists?.map((list) => (
+        {lists?.map((list) => (
           <List key={list._id} list={list} />
         ))}
       </div>

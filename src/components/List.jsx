@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardHeader } from "./ui/card";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import {
 import useTaskStore from "@/store/taskStore";
 import useListStore from "@/store/listStore";
 import { Task } from "./Task";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 export const List = ({ list }) => {
   const [taskForm, setTaskForm] = useState({
@@ -32,8 +33,9 @@ export const List = ({ list }) => {
     description: "",
     priority: "",
   });
-  const { singleList, loading } = useListStore();
+  const { singleList, fetchLists, loading } = useListStore();
   const { addTask } = useTaskStore();
+  const { boardId } = useParams();
 
   const handleChange = (e) => {
     setTaskForm({ ...taskForm, [e.target.name]: e.target.value });
@@ -54,6 +56,8 @@ export const List = ({ list }) => {
         description: "",
         priority: "",
       });
+
+      singleList(list._id);
     }
   };
 
@@ -62,11 +66,9 @@ export const List = ({ list }) => {
       <h2 className="font-bold">{list.title}</h2>
 
       <div className="mt-2 space-y-2">
-        {list.tasks.map((task) => {
-          console.log(task);
-
-          <Task key={task._id} task={task} />;
-        })}
+        {list.tasks.map((task) => (
+          <Task key={task._id} task={task} />
+        ))}
       </div>
 
       <div className="mt-4">
@@ -129,7 +131,9 @@ export const List = ({ list }) => {
             </div>
 
             <DialogFooter>
-              <Button onClick={handleAddTask}>Add Task</Button>
+              <DialogClose asChild>
+                <Button onClick={handleAddTask}>Add Task</Button>
+              </DialogClose>
             </DialogFooter>
           </DialogContent>
           {/* </form> */}

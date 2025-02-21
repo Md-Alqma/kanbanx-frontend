@@ -18,7 +18,7 @@ const useTaskStore = create((set) => ({
       });
 
       const boardStore = useBoardStore.getState();
-      const boards = boardStore.boards || []; // Ensure it's an array
+      const boards = boardStore.boards || [];
       const setBoardStore = useBoardStore.setState;
 
       setBoardStore({
@@ -43,7 +43,12 @@ const useTaskStore = create((set) => ({
   deleteTask: async (taskId, listId) => {
     try {
       await apiClient.delete(`/tasks/${taskId}`);
-      set((state) => ({
+
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || []; 
+      const setBoardStore = useBoardStore.setState;
+
+      setBoardStore((state) => ({
         boards: state.boards.map((board) => ({
           ...board,
           lists: board.lists.map((list) =>
@@ -55,6 +60,10 @@ const useTaskStore = create((set) => ({
               : list
           ),
         })),
+      }));
+
+      set((state) => ({
+        tasks: state.tasks.filter((task) => task._id !== taskId),
       }));
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -79,7 +88,12 @@ const useTaskStore = create((set) => ({
       const response = await apiClient.put(`/tasks/${taskId}/move`, {
         listId: newListId,
       });
-      set((state) => ({
+
+      const boardStore = useBoardStore.getState();
+      const boards = boardStore.boards || []; 
+      const setBoardStore = useBoardStore.setState;
+
+      setBoardStore((state) => ({
         boards: state.boards.map((board) => ({
           ...board,
           lists: board.lists.map((list) => {

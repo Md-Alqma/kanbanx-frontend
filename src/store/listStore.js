@@ -25,16 +25,16 @@ const useListStore = create((set) => ({
       set((state) => ({
         lists: [...state.lists, response.data],
       }));
-      await get().fetchLists();
     } catch (error) {
       console.error("Error creating list:", error);
     }
   },
 
-  fetchLists: async () => {
+  fetchLists: async (boardId) => {
+    set({ loading: true });
     try {
-      const response = await apiClient.get("/lists");
-      set({ lists: response.data });
+      const response = await apiClient.get(`/lists/${boardId}`);
+      set({ lists: response.data, loading: false });
     } catch (error) {
       console.error("Error fetching lists:", error);
     }
