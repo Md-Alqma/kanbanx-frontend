@@ -19,10 +19,10 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route element={<ProtectedRoute />}>
-            <Route path="/boards" element={<Dashboard />} />
-            <Route path="/boards/:boardId" element={<BoardPage />} />
-          </Route>
+          {/* <Route element={<ProtectedRoute />}> */}
+          <Route path="/boards" element={<Dashboard />} />
+          <Route path="/boards/:boardId" element={<BoardPage />} />
+          {/* </Route> */}
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
         </Routes>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useParams } from "react-router-dom";
 import {
@@ -28,6 +28,7 @@ import { Task } from "./Task";
 import { DialogClose } from "@radix-ui/react-dialog";
 
 export const List = ({ list }) => {
+  const [open, setopen] = useState(false);
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -40,6 +41,10 @@ export const List = ({ list }) => {
   const handleChange = (e) => {
     setTaskForm({ ...taskForm, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    fetchLists(boardId);
+  }, [open]);
 
   const handleAddTask = async (e) => {
     e.preventDefault();
@@ -57,7 +62,7 @@ export const List = ({ list }) => {
         priority: "",
       });
 
-      singleList(list._id);
+      setopen(false);
     }
   };
 
@@ -72,7 +77,7 @@ export const List = ({ list }) => {
       </div>
 
       <div className="mt-4">
-        <Dialog>
+        <Dialog open={open} onOpenChange={setopen}>
           <DialogTrigger asChild>
             <Button variant="outline">Add Task</Button>
           </DialogTrigger>
@@ -131,9 +136,11 @@ export const List = ({ list }) => {
             </div>
 
             <DialogFooter>
-              <DialogClose asChild>
-                <Button onClick={handleAddTask}>Add Task</Button>
-              </DialogClose>
+              <DialogTrigger asChild>
+                <Button type="button" onClick={handleAddTask}>
+                  Add Task
+                </Button>
+              </DialogTrigger>
             </DialogFooter>
           </DialogContent>
           {/* </form> */}
