@@ -45,7 +45,7 @@ const useTaskStore = create((set) => ({
       await apiClient.delete(`/tasks/${taskId}`);
 
       const boardStore = useBoardStore.getState();
-      const boards = boardStore.boards || []; 
+      const boards = boardStore.boards || [];
       const setBoardStore = useBoardStore.setState;
 
       setBoardStore((state) => ({
@@ -90,7 +90,7 @@ const useTaskStore = create((set) => ({
       });
 
       const boardStore = useBoardStore.getState();
-      const boards = boardStore.boards || []; 
+      const boards = boardStore.boards || [];
       const setBoardStore = useBoardStore.setState;
 
       setBoardStore((state) => ({
@@ -107,6 +107,11 @@ const useTaskStore = create((set) => ({
           }),
         })),
       }));
+      // set((state) => ({
+      //   tasks: state.tasks.map((task) =>
+      //     task._id === taskId ? { ...task, listId: newListId } : task
+      //   ),
+      // }));
     } catch (error) {
       console.error("Error moving task:", error);
     }
