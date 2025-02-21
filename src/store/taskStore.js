@@ -1,9 +1,10 @@
-import create from "zustand";
+import { create } from "zustand";
 import apiClient from "@/api/apiClient";
 
 const useTaskStore = create((set) => ({
   tasks: [],
   loading: false,
+  task: null,
 
   addTask: async (listId, title, description, dueDate, priority) => {
     try {
@@ -62,7 +63,7 @@ const useTaskStore = create((set) => ({
       console.error("Error updating task", error);
     }
   },
-  
+
   moveTask: async (taskId, newListId) => {
     try {
       const response = await axios.put(`/tasks/${taskId}/move`, {

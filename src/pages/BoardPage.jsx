@@ -38,9 +38,7 @@ export const BoardPage = () => {
               boardId={boardId}
               className="w-full border border-black"
               key={list._id}
-            >
-              {list.title}
-            </List>
+            />
           ))}
           <Button onClick={() => handleList(board._id)}>Add List</Button>
         </div>

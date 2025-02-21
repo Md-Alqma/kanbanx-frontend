@@ -5,6 +5,7 @@ import useBoardStore from "./boardStore";
 const useListStore = create((set) => ({
   lists: [],
   loading: false,
+  list: null,
 
   addList: async (boardId, title) => {
     try {
@@ -24,6 +25,17 @@ const useListStore = create((set) => ({
       }));
     } catch (error) {
       console.error("Error creating list:", error);
+    }
+  },
+
+  singleList: async (listId) => {
+    set({ loading: true });
+    try {
+      const response = await apiClient.get(`/lists/${listId}`);
+      set({ list: response.data, loading: false });
+      return response.data;
+    } catch (error) {
+      console.error("Error getting list: ", error);
     }
   },
 

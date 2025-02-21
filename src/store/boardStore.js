@@ -23,7 +23,8 @@ const useBoardStore = create((set) => ({
     try {
       const response = await apiClient.get(`/boards/${boardId}`);
       set({ board: response.data, loading: false });
-    } catch (error) {}
+    } catch (error) {
+    }
   },
   createBoard: async (title) => {
     try {
