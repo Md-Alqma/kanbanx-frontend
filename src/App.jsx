@@ -1,30 +1,28 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import RegisterForm from "./components/RegisterForm";
-import LoginForm from "./components/LoginForm";
 import Navbar from "./components/Navbar";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import useAuthStore from "./store/authStore";
-import { useEffect } from "react";
-import { BoardPage } from "./pages/BoardPage";
+import AuthLayout from "./components/layout/AuthLayout";
+import AppLayout from "./components/layout/AppLayout";
+import Home from "./pages/Home";
+import Board from "./pages/Board";
+import Signup from "./pages/Signup.jsx";
+import Login from "./pages/Login";
 
 function App() {
-  const { fetchUser } = useAuthStore();
-  useEffect(() => {
-    fetchUser();
-  }, []);
   return (
     <>
       <Router>
         <Navbar />
         <Routes>
-          {/* <Route element={<ProtectedRoute />}> */}
-          <Route path="/boards" element={<Dashboard />} />
-          <Route path="/boards/:boardId" element={<BoardPage />} />
-          {/* </Route> */}
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/" element={<AuthLayout />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Signup />} />
+          </Route>
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path="boards" element={<Home />} />
+            <Route path="boards/:boardId" element={<Board />} />
+          </Route>
         </Routes>
       </Router>
     </>

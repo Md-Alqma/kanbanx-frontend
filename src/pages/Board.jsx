@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import useTaskStore from "@/store/taskStore";
 
-export const BoardPage = () => {
+const Board = () => {
   const [title, setTitle] = useState("");
   const { singleBoard, loading, board } = useBoardStore();
   const { addList, fetchLists, lists } = useListStore();
@@ -77,3 +77,5 @@ export const BoardPage = () => {
     </DragDropContext>
   );
 };
+
+export default Board;

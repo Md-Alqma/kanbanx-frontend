@@ -1,27 +1,39 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "@/store/authStore";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-const RegisterForm = () => {
-  const { register, error, loading } = useAuthStore();
+import authApi from "@/api/authApi";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    register(form.email, form.password);
-    navigate("/boards");
+    setLoading(true);
+    try {
+      console.log(form.email, form.password);
+
+      const res = await authApi.login({
+        email: form.email,
+        password: form.password,
+      });
+      setLoading(false);
+      localStorage.setItem("token", res.token);
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
   return (
     <div className="flex justify-between items-center flex-col gap-4">
-      <h2 className="text-2xl font-black">Register</h2>
-      {error && <p className="text-red-500">{error}</p>}
+      <h2 className="text-2xl font-black">Login</h2>
       <form
         className="flex flex-col justify-center items-center gap-2"
         onSubmit={handleSubmit}
@@ -52,11 +64,11 @@ const RegisterForm = () => {
           />
         </div>
         <Button type="submit" disabled={loading}>
-          Register
+          Login
         </Button>
       </form>
     </div>
   );
 };
 
-export default RegisterForm;
+export default Login;
