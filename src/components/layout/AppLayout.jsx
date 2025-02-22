@@ -1,7 +1,9 @@
+import { setUser } from "@/redux/features/userSlice";
 import authUtils from "@/utils/authUtils";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
+import Sidebar from "../common/Sidebar";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ const AppLayout = () => {
       if (!user) {
         navigate("/login");
       } else {
+        dispatch(setUser(user));
         setLoading(false);
       }
     };

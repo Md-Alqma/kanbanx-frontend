@@ -1,22 +1,27 @@
-import React, { useEffect } from "react";
-import { Input } from "./ui/input";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import useAuthStore from "@/store/authStore";
-import { Button } from "./ui/button";
+import React, { useEffect, useState } from "react";
+import { Input } from "../ui/input";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import authUtils from "@/utils/authUtils";
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout, fetchUser } = useAuthStore();
-
+  const [logout, setLogout] = useState(false);
   useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+    const checkAuth = async () => {
+      const isAuth = authUtils.isAuthenticated();
+      if (!isAuth) {
+        setLogout(true);
+      }
+    };
+    checkAuth();
+  }, []);
   return (
     <div className="flex justify-between p-4">
       <h2 className="text-xl font-black">KanbanX</h2>
 
       <div className="flex items-center px-2 gap-4">
-        {isAuthenticated ? (
+        {logout ? (
           <>
             <Input type="search" placeholder="search" />
             <Avatar onClick={logout}>

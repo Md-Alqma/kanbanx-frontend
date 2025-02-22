@@ -1,52 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useBoardStore from "@/store/boardStore";
-import { Board } from "@/components/Board";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useDispatch } from "react-redux";
+import boardApi from "@/api/boardApi";
+import { setBoards } from "@/redux/features/boardSlice";
 
-const Dashboard = () => {
-  const [title, setTitle] = useState("");
-  const { fetchBoards, createBoard, boards, loading } = useBoardStore();
+const Home = () => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    fetchBoards();
-  }, []);
+  const dispatch = useDispatch();
 
   const handleCreateBoard = async () => {
-    if (title.trim()) {
-      await createBoard(title);
-      fetchBoards();
-      setTitle("");
+    setLoading(true);
+    try {
+      const res = await boardApi.createBoard();
+      dispatch(setBoards([res]));
+      console.log(res);
+
+      navigate(`/boards/${res._id}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Kanban Dashboard</h1>
-      <div className="flex flex-col gap-2 mb-4">
-        <Input
-          type="text"
-          className="border p-2 rounded"
-          placeholder="Board Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <Button onClick={handleCreateBoard}>Add Board</Button>
-      </div>
-      {loading && <p>Loading...</p>}
-      <div className="grd grid-cols-4 gap-4">
-        {boards.map((board) => (
-          <div
-            key={board._id}
-            className="p-4 border rounded-lg shadow-md cursor-pointer hover:bg-gray-100"
-            onClick={() => navigate(`/boards/${board._id}`)}
-          >
-            {board.title ? board.title : "Untitled"}
-          </div>
-        ))}
-      </div>
+    <div>
+      <Button variant="outline" onClick={handleCreateBoard}>
+        Click here to create your first board
+      </Button>
     </div>
   );
 };
 
-export default Dashboard;
+export default Home;

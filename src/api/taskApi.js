@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 
 const taskApi = {
-  create: (boardId, params) =>
+  createTask: (boardId, params) =>
     apiClient.post(`boards/${boardId}/tasks`, params),
   moveTask: (boardId, params) =>
     apiClient.put(`boards/${boardId}/tasks/move`, params),

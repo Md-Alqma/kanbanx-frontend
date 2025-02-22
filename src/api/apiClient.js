@@ -23,11 +23,11 @@ apiClient.interceptors.response.use(
     if (response && response.data) return response.data;
     return response;
   },
-  (err) => {
+  (error) => {
     if (!error.response) {
       return alert(err);
     }
-    throw err.response;
+    throw error.response;
   }
 );
 
