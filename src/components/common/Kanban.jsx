@@ -18,8 +18,8 @@ const Kanban = ({ data, boardId }) => {
 
   const createList = async () => {
     try {
-      console.log(boardId);
       const list = await listApi.createList(boardId);
+
       setLists([...data, list]);
     } catch (error) {
       console.error(error);
@@ -45,6 +45,8 @@ const Kanban = ({ data, boardId }) => {
     setLists(newLists);
     timer = setTimeout(async () => {
       try {
+        console.log(listId);
+
         await listApi.updateList(boardId, listId, { title: newTitle });
       } catch (error) {
         console.error(error);
@@ -91,6 +93,7 @@ const Kanban = ({ data, boardId }) => {
       </div>
       {data.map((list) => (
         <div key={list.id} className="w-[300px]">
+          {console.log(list)}
           <div className="w-300px p-2 mr-2">
             <div className="flex items-center justify-center mb-2">
               <Input
@@ -99,11 +102,11 @@ const Kanban = ({ data, boardId }) => {
                 placeholder="Untitled"
                 className="text-lg font-bold"
               />
-              <Button variant="outline">
-                <PlusIcon onClick={() => createList(list.id)} />
+              <Button onClick={() => createTask(list._id)} variant="outline">
+                <PlusIcon />
               </Button>
-              <Button variant="outline">
-                <DeleteIcon onClick={() => deleteList(list.id)} />
+              <Button onClick={() => deleteList(list._id)} variant="outline">
+                <DeleteIcon />
               </Button>
             </div>
             {list.tasks.map((task, index) => (
