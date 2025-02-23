@@ -68,7 +68,7 @@ const Kanban = (props) => {
       });
       setData(data);
     } catch (err) {
-      alert(err);
+      console.error(err);
     }
   };
 
@@ -77,7 +77,7 @@ const Kanban = (props) => {
       const list = await listApi.create(boardId);
       setData([...data, list]);
     } catch (err) {
-      alert(err);
+      console.error(err);
     }
   };
 
@@ -87,7 +87,7 @@ const Kanban = (props) => {
       const newData = [...data].filter((e) => e.id !== listId);
       setData(newData);
     } catch (err) {
-      alert(err);
+      console.error(err);
     }
   };
 
@@ -102,7 +102,7 @@ const Kanban = (props) => {
       try {
         await listApi.update(boardId, listId, { title: newTitle });
       } catch (err) {
-        alert(err);
+        console.error(err);
       }
     }, timeout);
   };
@@ -115,7 +115,7 @@ const Kanban = (props) => {
       newData[index].tasks.unshift(task);
       setData(newData);
     } catch (err) {
-      alert(err);
+      console.error(err);
     }
   };
 

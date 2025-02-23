@@ -81,7 +81,7 @@ const TaskModal = (props) => {
       props.onDelete(task);
       setTask(undefined);
     } catch (err) {
-      alert(err);
+      console.error(err);
     }
   };
 
@@ -92,7 +92,7 @@ const TaskModal = (props) => {
       try {
         await taskApi.update(boardId, task.id, { title: newTitle });
       } catch (err) {
-        alert(err);
+        console.error(err);
       }
     }, timeout);
 
@@ -109,7 +109,7 @@ const TaskModal = (props) => {
         try {
           await taskApi.update(boardId, task.id, { content: newContent });
         } catch (err) {
-          alert(err);
+          console.error(err);
         }
       }, timeout);
 
@@ -126,7 +126,7 @@ const TaskModal = (props) => {
         try {
           await taskApi.update(boardId, task.id, { dueDate: newDueDate });
         } catch (err) {
-          alert(err);
+          console.error(err);
         }
       }, timeout);
 
@@ -144,7 +144,7 @@ const TaskModal = (props) => {
         try {
           await taskApi.update(boardId, task.id, { priority: newPriority });
         } catch (err) {
-          alert(err);
+          console.error(err);
         }
       }, timeout);
 
