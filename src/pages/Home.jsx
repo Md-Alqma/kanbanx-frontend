@@ -1,35 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import boardApi from "@/api/boardApi";
-import { setBoards } from "@/redux/features/boardSlice";
+import { setBoards } from "../redux/features/boardSlice";
+import { useNavigate } from "react-router-dom";
+import boardApi from "../api/boardApi";
+import { useState } from "react";
+import { Box } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 
 const Home = () => {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
-  const handleCreateBoard = async () => {
+  const createBoard = async () => {
     setLoading(true);
     try {
-      const res = await boardApi.createBoard();
+      const res = await boardApi.create();
       dispatch(setBoards([res]));
-      console.log(res);
-
-      navigate(`/boards/${res._id}`);
-    } catch (error) {
-      console.error(error);
+      navigate(`/boards/${res.id}`);
+    } catch (err) {
+      alert(err);
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <div>
-      <Button variant="outline" onClick={handleCreateBoard}>
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <LoadingButton
+        variant="outlined"
+        color="success"
+        onClick={createBoard}
+        loading={loading}
+      >
         Click here to create your first board
-      </Button>
-    </div>
+      </LoadingButton>
+    </Box>
   );
 };
 

@@ -1,9 +1,9 @@
-import apiClient from "./apiClient";
+import axiosClient from "./axiosClient"
 
 const authApi = {
-  register: (params) => apiClient.post("users/register", params),
-  login: (params) => apiClient.post("users/login", params),
-  verifyToken: () => apiClient.post("users/verifyToken"),
-};
+  signup: params => axiosClient.post('auth/signup', params),
+  login: params => axiosClient.post('auth/login', params),
+  verifyToken: () => axiosClient.post('auth/verify-token')
+}
 
-export default authApi;
+export default authApi

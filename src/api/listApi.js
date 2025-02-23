@@ -1,11 +1,11 @@
-import apiClient from "./apiClient";
+import axiosClient from "./axiosClient";
 
 const listApi = {
-  createList: (boardId) => apiClient.post(`boards/${boardId}/lists`),
-  updateList: (boardId, listId, params) =>
-    apiClient.put(`boards/${boardId}/lists/${listId}`, params),
-  deleteList: (boardId, listId) =>
-    apiClient.delete(`boards/${boardId}/lists/${listId}`),
+  create: (boardId) => axiosClient.post(`boards/${boardId}/lists`),
+  update: (boardId, listId, params) =>
+    axiosClient.put(`boards/${boardId}/lists/${listId}`, params),
+  delete: (boardId, listId) =>
+    axiosClient.delete(`boards/${boardId}/lists/${listId}`),
 };
 
 export default listApi;

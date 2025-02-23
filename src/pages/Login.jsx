@@ -1,73 +1,100 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import authApi from "@/api/authApi";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-const Login = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+import authApi from "../api/authApi";
+import { Box, Button, TextField } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+
+const Login = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [usernameErrText, setUsernameErrText] = useState("");
+  const [passwordErrText, setPasswordErrText] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      console.log(form.email, form.password);
+    setUsernameErrText("");
+    setPasswordErrText("");
 
-      const res = await authApi.login({
-        email: form.email,
-        password: form.password,
-      });
+    const data = new FormData(e.target);
+    const username = data.get("username").trim();
+    const password = data.get("password").trim();
+
+    let err = false;
+
+    if (username === "") {
+      err = true;
+      setUsernameErrText("Please fill this field");
+    }
+    if (password === "") {
+      err = true;
+      setPasswordErrText("Please fill this field");
+    }
+
+    if (err) return;
+
+    setLoading(true);
+
+    try {
+      const res = await authApi.login({ username, password });
       setLoading(false);
       localStorage.setItem("token", res.token);
       navigate("/");
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      const errors = err.data.errors;
+      errors.forEach((e) => {
+        if (e.param === "username") {
+          setUsernameErrText(e.msg);
+        }
+        if (e.param === "password") {
+          setPasswordErrText(e.msg);
+        }
+      });
       setLoading(false);
     }
   };
+
   return (
-    <div className="flex justify-between items-center flex-col gap-4">
-      <h2 className="text-2xl font-black">Login</h2>
-      <form
-        className="flex flex-col justify-center items-center gap-2"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <Label htmlFor="email">Email</Label>
-
-          <Input
-            type="email"
-            name="email"
-            placeholder="email@gmail.com"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="password">Password</Label>
-
-          <Input
-            type="password"
-            name="password"
-            placeholder="xxxxxxx"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <Button type="submit" disabled={loading}>
+    <>
+      <Box component="form" sx={{ mt: 1 }} onSubmit={handleSubmit} noValidate>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="username"
+          label="Username"
+          name="username"
+          disabled={loading}
+          error={usernameErrText !== ""}
+          helperText={usernameErrText}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="password"
+          label="Password"
+          name="password"
+          type="password"
+          disabled={loading}
+          error={passwordErrText !== ""}
+          helperText={passwordErrText}
+        />
+        <LoadingButton
+          sx={{ mt: 3, mb: 2 }}
+          variant="outlined"
+          fullWidth
+          color="success"
+          type="submit"
+          loading={loading}
+        >
           Login
-        </Button>
-      </form>
-    </div>
+        </LoadingButton>
+      </Box>
+      <Button component={Link} to="/signup" sx={{ textTransform: "none" }}>
+        Don't have an account? Signup
+      </Button>
+    </>
   );
 };
 

@@ -1,14 +1,15 @@
 import axios from "axios";
 import queryString from "query-string";
 
+const baseUrl = "http://127.0.0.1:5000/api/v1/";
 const getToken = () => localStorage.getItem("token");
 
-const apiClient = axios.create({
-  baseURL: "http://localhost:8080/api/",
+const axiosClient = axios.create({
+  baseURL: baseUrl,
   paramsSerializer: (params) => queryString.stringify({ params }),
 });
 
-apiClient.interceptors.request.use(async (config) => {
+axiosClient.interceptors.request.use(async (config) => {
   return {
     ...config,
     headers: {
@@ -18,17 +19,17 @@ apiClient.interceptors.request.use(async (config) => {
   };
 });
 
-apiClient.interceptors.response.use(
+axiosClient.interceptors.response.use(
   (response) => {
     if (response && response.data) return response.data;
     return response;
   },
-  (error) => {
-    if (!error.response) {
+  (err) => {
+    if (!err.response) {
       return alert(err);
     }
-    throw error.response;
+    throw err.response;
   }
 );
 
-export default apiClient;
+export default axiosClient;

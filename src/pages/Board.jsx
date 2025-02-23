@@ -1,36 +1,69 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import boardApi from "@/api/boardApi";
-import { setBoards } from "@/redux/features/boardSlice";
-import { BookIcon, BriefcaseIcon, DeleteIcon, TrashIcon } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
-import Kanban from "@/components/common/Kanban";
+import { useNavigate, useParams } from "react-router-dom";
+import boardApi from "../api/boardApi";
+import Kanban from "../components/common/Kanban";
+import { setBoards } from "../redux/features/boardSlice";
+import { setFavouriteList } from "../redux/features/favouriteSlice";
+import { Box, IconButton, TextField } from "@mui/material";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
+import StarOutlinedIcon from "@mui/icons-material/StarOutlined";
 let timer;
 const timeout = 500;
+
 const Board = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { boardId } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [lists, setLists] = useState([]);
-  const { boardId } = useParams();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [icon, setIcon] = useState("");
 
   const boards = useSelector((state) => state.board.value);
+  const favouriteList = useSelector((state) => state.favourites.value);
+
   useEffect(() => {
     const getBoard = async () => {
       try {
-        const res = await boardApi.getSingleBoard(boardId);
+        const res = await boardApi.getOne(boardId);
         setTitle(res.title);
         setDescription(res.description);
         setLists(res.lists);
-      } catch (error) {
-        console.error(error);
+        setIsFavourite(res.favourite);
+        setIcon(res.icon);
+      } catch (err) {
+        alert(err);
       }
     };
     getBoard();
   }, [boardId]);
+
+  const onIconChange = async (newIcon) => {
+    let temp = [...boards];
+    const index = temp.findIndex((e) => e.id === boardId);
+    temp[index] = { ...temp[index], icon: newIcon };
+
+    if (isFavourite) {
+      let tempFavourite = [...favouriteList];
+      const favouriteIndex = tempFavourite.findIndex((e) => e.id === boardId);
+      tempFavourite[favouriteIndex] = {
+        ...tempFavourite[favouriteIndex],
+        icon: newIcon,
+      };
+      dispatch(setFavouriteList(tempFavourite));
+    }
+
+    setIcon(newIcon);
+    dispatch(setBoards(temp));
+    try {
+      await boardApi.update(boardId, { icon: newIcon });
+    } catch (err) {
+      alert(err);
+    }
+  };
 
   const updateTitle = async (e) => {
     clearTimeout(timer);
@@ -41,13 +74,23 @@ const Board = () => {
     const index = temp.findIndex((e) => e.id === boardId);
     temp[index] = { ...temp[index], title: newTitle };
 
+    if (isFavourite) {
+      let tempFavourite = [...favouriteList];
+      const favouriteIndex = tempFavourite.findIndex((e) => e.id === boardId);
+      tempFavourite[favouriteIndex] = {
+        ...tempFavourite[favouriteIndex],
+        title: newTitle,
+      };
+      dispatch(setFavouriteList(tempFavourite));
+    }
+
     dispatch(setBoards(temp));
 
     timer = setTimeout(async () => {
       try {
-        await boardApi.updateBoard(boardId, { title: newTitle });
-      } catch (error) {
-        console.error(error);
+        await boardApi.update(boardId, { title: newTitle });
+      } catch (err) {
+        alert(err);
       }
     }, timeout);
   };
@@ -58,16 +101,36 @@ const Board = () => {
     setDescription(newDescription);
     timer = setTimeout(async () => {
       try {
-        await boardApi.updateBoard(boardId, { description: newDescription });
-      } catch (error) {
-        console.error(error);
+        await boardApi.update(boardId, { description: newDescription });
+      } catch (err) {
+        alert(err);
       }
     }, timeout);
   };
 
+  const addFavourite = async () => {
+    try {
+      const board = await boardApi.update(boardId, { favourite: !isFavourite });
+      let newFavouriteList = [...favouriteList];
+      if (isFavourite) {
+        newFavouriteList = newFavouriteList.filter((e) => e.id !== boardId);
+      } else {
+        newFavouriteList.unshift(board);
+      }
+      dispatch(setFavouriteList(newFavouriteList));
+      setIsFavourite(!isFavourite);
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   const deleteBoard = async () => {
     try {
-      await boardApi.deleteBoard(boardId);
+      await boardApi.delete(boardId);
+      if (isFavourite) {
+        const newFavouriteList = favouriteList.filter((e) => e.id !== boardId);
+        dispatch(setFavouriteList(newFavouriteList));
+      }
 
       const newList = boards.filter((e) => e.id !== boardId);
       if (newList.length === 0) {
@@ -76,38 +139,68 @@ const Board = () => {
         navigate(`/boards/${newList[0].id}`);
       }
       dispatch(setBoards(newList));
-    } catch (error) {}
+    } catch (err) {
+      alert(err);
+    }
   };
 
   return (
     <>
-      <div className="flex items-center justify-between w-full">
-        <BookIcon />
-        <button>
-          <TrashIcon />
-        </button>
-        {console.log(boardId)}
-      </div>
-      <div className="px-12 py-2">
-        <div>
-          <BriefcaseIcon />
-          <Input
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <IconButton variant="outlined" onClick={addFavourite}>
+          {isFavourite ? (
+            <StarOutlinedIcon color="warning" />
+          ) : (
+            <StarBorderOutlinedIcon />
+          )}
+        </IconButton>
+        <IconButton variant="outlined" color="error" onClick={deleteBoard}>
+          <DeleteOutlinedIcon />
+        </IconButton>
+      </Box>
+      <Box sx={{ padding: "10px 50px" }}>
+        <Box>
+          <TextField
             value={title}
             onChange={updateTitle}
             placeholder="Untitled"
-            className="w-full text-3xl font-bold border"
+            variant="outlined"
+            fullWidth
+            sx={{
+              "& .MuiOutlinedInput-input": { padding: 0 },
+              "& .MuiOutlinedInput-notchedOutline": { border: "unset " },
+              "& .MuiOutlinedInput-root": {
+                fontSize: "2rem",
+                fontWeight: "700",
+              },
+            }}
           />
-          <Textarea
+          <TextField
             value={description}
             onChange={updateDescription}
             placeholder="Add a description"
-            variant="outline"
+            variant="outlined"
+            multiline
+            fullWidth
+            sx={{
+              "& .MuiOutlinedInput-input": { padding: 0 },
+              "& .MuiOutlinedInput-notchedOutline": { border: "unset " },
+              "& .MuiOutlinedInput-root": { fontSize: "0.8rem" },
+            }}
           />
-        </div>
-        <div>
+        </Box>
+        <Box>
+          {/* Kanban board */}
           <Kanban data={lists} boardId={boardId} />
-        </div>
-      </div>
+        </Box>
+      </Box>
     </>
   );
 };

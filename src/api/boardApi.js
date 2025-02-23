@@ -1,12 +1,15 @@
-import apiClient from "./apiClient";
+import axiosClient from "./axiosClient";
 
 const boardApi = {
-  createBoard: () => apiClient.post("boards"),
-  getBoards: () => apiClient.get("boards"),
-  updateBoardPosition: (params) => apiClient.put("boards", params),
-  getSingleBoard: (id) => apiClient.get(`boards/${id}`),
-  deleteBoard: (id) => apiClient.delete(`boards/${id}`),
-  updateBoard: (id, params) => apiClient.put(`boards/${id}`, params),
+  create: () => axiosClient.post("boards"),
+  getAll: () => axiosClient.get("boards"),
+  updatePositoin: (params) => axiosClient.put("boards", params),
+  getOne: (id) => axiosClient.get(`boards/${id}`),
+  delete: (id) => axiosClient.delete(`boards/${id}`),
+  update: (id, params) => axiosClient.put(`boards/${id}`, params),
+  getFavourites: () => axiosClient.get("boards/favourites"),
+  updateFavouritePosition: (params) =>
+    axiosClient.put("boards/favourites", params),
 };
 
 export default boardApi;
