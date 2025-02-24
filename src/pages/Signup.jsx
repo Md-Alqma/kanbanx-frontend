@@ -8,41 +8,37 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [usernameErrText, setUsernameErrText] = useState("");
-  const [passwordErrText, setPasswordErrText] = useState("");
-  const [confirmPasswordErrText, setConfirmPasswordErrText] = useState("");
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+    confirmPassword: "",
+  });
+  // const [usernameErrText, setUsernameErrText] = useState("");
+  // const [passwordErrText, setPasswordErrText] = useState("");
+  // const [confirmPasswordErrText, setConfirmPasswordErrText] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUsernameErrText("");
-    setPasswordErrText("");
-    setConfirmPasswordErrText("");
+
+    setErrors({ username: "", password: "", confirmPassword: "" });
 
     const data = new FormData(e.target);
     const username = data.get("username").trim();
     const password = data.get("password").trim();
     const confirmPassword = data.get("confirmPassword").trim();
 
-    let err = false;
+    let newErrors = {};
 
-    if (username === "") {
-      err = true;
-      setUsernameErrText("Please fill this field");
-    }
-    if (password === "") {
-      err = true;
-      setPasswordErrText("Please fill this field");
-    }
-    if (confirmPassword === "") {
-      err = true;
-      setConfirmPasswordErrText("Please fill this field");
-    }
-    if (password !== confirmPassword) {
-      err = true;
-      setConfirmPasswordErrText("Confirm password not match");
-    }
+    if (!username) newErrors.username = "Please fill this field";
+    if (!password) newErrors.password = "Please fill this field";
+    if (!confirmPassword) newErrors.confirmPassword = "Please fill this field";
+    if (password !== confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
 
-    if (err) return;
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     setLoading(true);
 
@@ -57,20 +53,12 @@ const Signup = () => {
       localStorage.setItem("token", res.token);
       navigate("/");
     } catch (err) {
-      console.log(err);
-
-      const errors = err.data.errors;
-      errors.forEach((e) => {
-        if (e.param === "username") {
-          setUsernameErrText(e.msg);
-        }
-        if (e.param === "password") {
-          setPasswordErrText(e.msg);
-        }
-        if (e.param === "confirmPassword") {
-          setConfirmPasswordErrText(e.msg);
-        }
+      const apiErrors = {};
+      err.data.errors.forEach((e) => {
+        apiErrors[e.path] = e.msg;
       });
+
+      setErrors(apiErrors);
       setLoading(false);
     }
   };
@@ -86,8 +74,8 @@ const Signup = () => {
           label="Username"
           name="username"
           disabled={loading}
-          error={usernameErrText !== ""}
-          helperText={usernameErrText}
+          error={!!errors.username}
+          helperText={errors.username}
         />
         <TextField
           margin="normal"
@@ -98,8 +86,8 @@ const Signup = () => {
           name="password"
           type="password"
           disabled={loading}
-          error={passwordErrText !== ""}
-          helperText={passwordErrText}
+          error={!!errors.password}
+          helperText={errors.password}
         />
         <TextField
           margin="normal"
@@ -110,8 +98,8 @@ const Signup = () => {
           name="confirmPassword"
           type="password"
           disabled={loading}
-          error={confirmPasswordErrText !== ""}
-          helperText={confirmPasswordErrText}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
         />
         <LoadingButton
           sx={{ mt: 3, mb: 2 }}
