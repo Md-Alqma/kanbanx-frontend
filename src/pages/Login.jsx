@@ -35,14 +35,19 @@ const Login = () => {
 
     try {
       const res = await authApi.login({ username, password });
+
       setLoading(false);
       localStorage.setItem("token", res.token);
       navigate("/");
     } catch (err) {
       const apiErrors = {};
+
       err.data.errors.forEach((e) => {
+        console.log(e);
+
         apiErrors[e.path] = e.msg;
       });
+      setErrors(apiErrors);
       setLoading(false);
     }
   };
