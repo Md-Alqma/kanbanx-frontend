@@ -11,6 +11,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
@@ -261,6 +262,17 @@ const TaskModal = (props) => {
               }}
             />
           </Box>
+          <Button
+            sx={{
+              position: "absolute",
+              right: "1rem",
+              bottom: "1.5rem",
+            }}
+            onClick={onClose}
+            variant="outlined"
+          >
+            Update Task
+          </Button>
         </Box>
       </Fade>
     </Modal>
