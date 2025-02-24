@@ -2,6 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 
 const baseUrl = "https://kanbanx.up.railway.app/api/v1/";
+
 const getToken = () => localStorage.getItem("token");
 
 const axiosClient = axios.create({

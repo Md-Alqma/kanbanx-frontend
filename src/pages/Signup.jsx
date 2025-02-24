@@ -13,9 +13,6 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-  // const [usernameErrText, setUsernameErrText] = useState("");
-  // const [passwordErrText, setPasswordErrText] = useState("");
-  // const [confirmPasswordErrText, setConfirmPasswordErrText] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
