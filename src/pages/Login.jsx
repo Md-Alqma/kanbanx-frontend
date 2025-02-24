@@ -9,21 +9,21 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({ username: "", password: "" });
+    setErrors({ email: "", password: "" });
 
     const data = new FormData(e.target);
-    const username = data.get("username").trim();
+    const email = data.get("email").trim();
     const password = data.get("password").trim();
 
     let newErrors = {};
 
-    if (!username) newErrors.username = "Please fill this field";
+    if (!email) newErrors.email = "Please fill this field";
     if (!password) newErrors.password = "Please fill this field";
 
     if (Object.keys(newErrors).length > 0) {
@@ -34,7 +34,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await authApi.login({ username, password });
+      const res = await authApi.login({ email, password });
 
       setLoading(false);
       localStorage.setItem("token", res.token);
@@ -59,12 +59,13 @@ const Login = () => {
           margin="normal"
           required
           fullWidth
-          id="username"
-          label="Username"
-          name="username"
+          id="email"
+          label="Email"
+          name="email"
+          type="email"
           disabled={loading}
-          error={!!errors.username}
-          helperText={errors.username}
+          error={!!errors.email}
+          helperText={errors.email}
         />
         <TextField
           margin="normal"

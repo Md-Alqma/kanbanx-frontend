@@ -10,6 +10,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -17,16 +18,20 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setErrors({ username: "", password: "", confirmPassword: "" });
+    setErrors({ username: "", email: "", password: "", confirmPassword: "" });
 
     const data = new FormData(e.target);
     const username = data.get("username").trim();
+    const email = data.get("email").trim();
+
     const password = data.get("password").trim();
     const confirmPassword = data.get("confirmPassword").trim();
 
     let newErrors = {};
 
     if (!username) newErrors.username = "Please fill this field";
+    if (!email) newErrors.email = "Please fill this field";
+
     if (!password) newErrors.password = "Please fill this field";
     if (!confirmPassword) newErrors.confirmPassword = "Please fill this field";
     if (password !== confirmPassword)
@@ -42,6 +47,7 @@ const Signup = () => {
     try {
       const res = await authApi.signup({
         username,
+        email,
         password,
         confirmPassword,
       });
@@ -73,6 +79,17 @@ const Signup = () => {
           disabled={loading}
           error={!!errors.username}
           helperText={errors.username}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email"
+          name="email"
+          disabled={loading}
+          error={!!errors.email}
+          helperText={errors.email}
         />
         <TextField
           margin="normal"
